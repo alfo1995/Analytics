@@ -291,6 +291,91 @@ applicazione(path)
 
     
 
-    
 
+
+
+    
+###################################### FARMACIE-PROVINCE
+
+def prov_max_res(path_prov,path_farmacie):
+
+    with open(str(path_prov)) as f:
+        regione=[]
+        provincia=[]
+        pop_res=[]
+        all=[]
+        for line in f:
+            #print(line)
+            c=line.rstrip()
+            c=c.split(';')
+            all.append(c)
+            CODREGIONE=c[0]
+            REGIONE=c[1]
+            regione.append(REGIONE)
+            CODPROVINCIA=c[2]
+            SIGLAPROVINCIA=c[3]
+            PROVINCIA=c[4]
+            provincia.append(PROVINCIA)
+            POPOLAZIONE=c[5]
+            pop_res.append(POPOLAZIONE)
+        
+            
+    
+           
+           
+    #creo dizionario con chiave uguale al nome della regione e valori uguale ad una nested list con all'interno liste formate da [regione,provincia,pop.residente]      
+    dizio=dict()
+    cont=0
+    for i in regione:
+        if i not in dizio.keys():
+            dizio[i]=[[i,provincia[cont],pop_res[cont]]]
+        else:
+            dizio[i].append([i,provincia[cont],pop_res[cont]])
+        cont+=1
+      
+    #poichè mi interessa solo la lista con pop.residente massima usa la lambda function
+    for i in dizio.keys():
+        value= max(dizio[i], key=lambda x: x[2]) #prendo la lista con campo 'max' in una nested list
+        dizio[i]=value
+        
+    del dizio['REGIONE']
+    print(dizio)
+    print()
+    print()
+
+
+    
+    #farmacie
+    with open(str(path_farmacie)) as f:
+        prov=[]
+        nome=[]
+        for line in f:
+            #print(line)
+            c=line.rstrip()
+            c=c.split(';')
+            prov.append(c[2])
+            nome.append(c[0])
+    
+    
+    
+    
+    #creo il dizionario con chiavi uguali ai nomi delle province e valori uguale ad una lista di nomi di farmacie presenti in quella provincia
+    dizio_prov=dict()
+    cont=0
+    for i in prov:
+        if i not in dizio_prov.keys():
+            dizio_prov[i]=[nome[cont]]
+        else:
+            dizio_prov[i].append(nome[cont])
+        cont+=1
+      
+    #a questo punto per ogni provincia con massima pop.residente vado a vedere le farmacie che esistono.
+    for i in dizio.keys():
+        if dizio[i][1].upper() in dizio_prov.keys():
+            print(str(dizio[i][1])+': '+str(dizio_prov[dizio[i][1].upper()]))
+        else:
+            print('Non ci sono farmacie nella provincia %s'%dizio[i][1])
+
+
+prov_max_res('/Users/alfonsodamelio/Downloads/provincie.csv','/Users/alfonsodamelio/Downloads/farmacie_prov.csv')
 
